@@ -1,5 +1,7 @@
-interface PubliiPlugin {
-    constructor (API: RendererPlugins, name: string, config: Dictionary<any>): PubliiPlugin;
+abstract class PubliiPlugin {
+    constructor (API: RendererPlugins, name: string, config: Dictionary<any>) {
+        // NOT IMPLEMENTED
+    };
 
     addInsertion?(): void;
     addModifier?(): void;
