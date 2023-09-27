@@ -1,18 +1,26 @@
-abstract class PubliiPlugin {
-    constructor (API: RendererPlugins, name: string, config: Dictionary<any>) {
-        // NOT IMPLEMENTED
-    };
+/* eslint-disable @typescript-eslint/ban-types */ // TODO: remove "function" type
+
+export abstract class PubliiPlugin {
+    api: RendererPlugins;
+    name: string;
+    config: Dictionary<any>;
+
+    constructor(api: RendererPlugins, name: string, config: Dictionary<any>) {
+        this.api = api;
+        this.name = name;
+        this.config = config;
+    }
 
     addInsertion?(): void;
     addModifier?(): void;
     addEvent?(): void;
 }
 
-interface Dictionary<T> {
+export interface Dictionary<T> {
     [Key: string]: T;
 }
 
-interface SiteConfig {
+export interface SiteConfig {
     domain: string;
 
     advanced?: Dictionary<any>;
@@ -20,29 +28,31 @@ interface SiteConfig {
     [Key: string]: any;
 }
 
-interface ErrorMessage {
+export interface ErrorMessage {
     message: string;
     desc: string;
 }
 
-interface StatusMessage {
+export interface StatusMessage {
     status: string;
 }
 
 // TODO: improve
-interface FinalContentStructure {
+export interface FinalContentStructure {
     posts;
     tags;
     authors;
 }
 
-interface Renderer {
+export interface Context extends Dictionary<any> {} // TODO
+
+export interface Renderer {
     siteConfig: SiteConfig;
     appDir?: string;
     sitesDir?: string;
     siteName?: string;
     themeName?: string;
-    menuContext?: string[] | '';
+    menuContext?: string[] | "";
     errorLog?: ErrorMessage[];
     previewMode?: boolean;
     useRelativeUrls?: boolean;
@@ -50,33 +60,48 @@ interface Renderer {
     plugins?: RendererPlugins;
     translations?: Dictionary<boolean>;
     contentStructure?: false | FinalContentStructure;
-    commonData?: Dictionary<any>;  // TODO: improve
-    cachedItems?: Dictionary<any>;  // TODO: improve
-    globalContext?: any;  // TODO: improve
+    commonData?: Dictionary<any>; // TODO: improve
+    cachedItems?: Dictionary<any>; // TODO: improve
+    globalContext?: any; // TODO: improve
     itemID?: number | boolean;
-    postData?: Dictionary<any> | boolean;  // TODO: improve;
+    postData?: Dictionary<any> | boolean; // TODO: improve;
     pluginsDir?: string;
     loadPlugins?(): void;
 }
 
-interface RendererParam {
+export interface RendererParam {
     priority: number;
     callback: Function;
     pluginInstance: PubliiPlugin;
 }
 
-type RendererAdd = (value: string, callback: Function, priority: number, pluginInstance: PubliiPlugin) => void;
-type RendererGet = (value: string) => RendererParam;
-type RendererHas = (value: string) => boolean;
-type RendererRemove = (value: string, callback: Function, priority: number) => void;
-type RendererReset = (value: string) => void;
+export type RendererAdd = (
+    value: string,
+    callback: Function,
+    priority: number,
+    pluginInstance: PubliiPlugin,
+) => void;
+export type RendererGet = (value: string) => RendererParam;
+export type RendererHas = (value: string) => boolean;
+export type RendererRemove = (
+    value: string,
+    callback: Function,
+    priority: number,
+) => void;
+export type RendererReset = (value: string) => void;
+export type RendererContext = Context | false;
 
-interface RendererPlugins {
+export type RendererInsertCallback = (
+    rendererInstance: Renderer,
+    params: RendererContext,
+) => string;
+
+export interface RendererPlugins {
     sitePath: string;
     insertions: Dictionary<RendererParam>;
     modifiers: Dictionary<RendererParam>;
     events: Dictionary<RendererParam>;
-    
+
     addInsertion: RendererAdd;
     addModifier: RendererAdd;
     addEvent: RendererAdd;
@@ -92,15 +117,36 @@ interface RendererPlugins {
     removeInsertions: RendererRemove;
     removeModifiers: RendererRemove;
     removeEvents: RendererRemove;
-    
+
     resetInsertions: RendererRemove;
     resetModifiers: RendererRemove;
     resetEvents: RendererRemove;
 
-    runModifiers <T extends any> ( value: string, rendererInstance: Renderer, originalValue: T, params: boolean): T;
-    runEvents ( value: string, rendererInstance:Renderer, params: boolean): true;
-    
-    sortByPriority (itemA: RendererParam, itemB: RendererParam): number;
-    readFile (fileName: string, pluginInstance: PubliiPlugin): string | undefined;
-    createFile (fileName: string, fileContent: string, pluginInstance: PubliiPlugin): StatusMessage;
+    runInsertions(
+        place: string,
+        rendererInstance: Renderer,
+        params: RendererContext,
+    ): string;
+    runModifiers<T>(
+        value: string,
+        rendererInstance: Renderer,
+        originalValue: T,
+        params: Context | false,
+    ): T;
+    runEvents(
+        value: string,
+        rendererInstance: Renderer,
+        params: RendererContext,
+    ): true;
+
+    sortByPriority(itemA: RendererParam, itemB: RendererParam): number;
+    readFile(
+        fileName: string,
+        pluginInstance: PubliiPlugin,
+    ): string | undefined;
+    createFile(
+        fileName: string,
+        fileContent: string,
+        pluginInstance: PubliiPlugin,
+    ): StatusMessage;
 }
