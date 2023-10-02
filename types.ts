@@ -45,6 +45,8 @@ export interface FinalContentStructure {
 }
 
 export interface Context extends Dictionary<any> {} // TODO
+// TODO RendererContext
+// TODO RendererContext.context
 
 export interface Renderer {
     siteConfig: SiteConfig;
@@ -131,7 +133,7 @@ export interface RendererPlugins {
         value: string,
         rendererInstance: Renderer,
         originalValue: T,
-        params: Context | false,
+        params: Context | false,  // TODO: adapt to 0.43.0 release and all I overlooked
     ): T;
     runEvents(
         value: string,
