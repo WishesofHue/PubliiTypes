@@ -226,10 +226,18 @@ export enum StopReceiveAllChannels {
     BlockEditorRedo = "block-editor-redo",
 }
 
-interface AppSiteGetPluginConfigRetrievedResult {
-    pluginConfig?: Dictionary<any>;
+export interface AppSiteGetPluginConfigRetrievedResult {
+    pluginConfig?: string;
     pluginData?: PluginData;
 } // Improve
+
+export interface ProcessEnv {
+    name: string;
+    nodeVersion: string;
+    chromeVersion: string;
+    electronVersion: string;
+    platformName: string;
+}
 
 export declare class MainProcessAPI {
     /**
@@ -273,13 +281,7 @@ export declare class MainProcessAPI {
      *
      * @memberof MainProcessAPI
      */
-    getEnv: () => {
-        name: string;
-        nodeVersion: string;
-        chromeVersion: string;
-        electronVersion: string;
-        platformName: string;
-    };
+    getEnv: () => ProcessEnv;
     send<T extends SendChannels>(channel: T, ...data: any[]): void; // TODO: improve
     receive<T extends ReceiveChannels>(channel: T, func: Function): void; // TODO: improve
     receiveOnce<T extends ReceiveOnceChannels>(
